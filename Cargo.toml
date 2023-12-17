@@ -14,7 +14,7 @@ filebuffer = "0.4"
 libc = "0.2.4"
 
 [dev-dependencies]
-criterion = "0.2"
+criterion = "0.5"
 
 [[bench]]
 name = "cdb"

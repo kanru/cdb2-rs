@@ -36,8 +36,6 @@
 //!  * [Constant Database (cdb) Internals](https://www.unixuser.org/~euske/doc/cdbinternals/index.html)
 //!  * [Wikipedia](https://en.wikipedia.org/wiki/Cdb_(software))
 
-extern crate filebuffer;
-
 mod hash;
 mod reader;
 mod uint32;

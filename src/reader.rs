@@ -1,5 +1,6 @@
-use filebuffer::FileBuffer;
+use memmap2::Mmap;
 use std::cmp::min;
+use std::fs::File;
 use std::io;
 use std::path;
 
@@ -22,7 +23,7 @@ const KEYSIZE: usize = 32;
 /// }
 /// ```
 pub struct CDB {
-    file: FileBuffer,
+    file: Mmap,
     size: usize,
 }
 
@@ -39,7 +40,8 @@ impl CDB {
     /// let cdb = cdb::CDB::open("tests/test1.cdb").unwrap();
     /// ```
     pub fn open<P: AsRef<path::Path>>(filename: P) -> Result<CDB> {
-        let file = FileBuffer::open(&filename)?;
+        let file = File::open(filename)?;
+        let file = unsafe { Mmap::map(&file)? };
         if file.len() < 2048 + 8 + 8 || file.len() > 0xffffffff {
             return err_badfile();
         }

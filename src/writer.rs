@@ -1,15 +1,13 @@
-use std::cmp::max;
-use std::fs;
-use std::io;
-use std::io::prelude::*;
-use std::iter;
-use std::path;
-use std::string;
+use std::{
+    cmp::max,
+    ffi::OsString,
+    fs,
+    io::{self, prelude::*, Result},
+    iter,
+    path::PathBuf,
+};
 
-use crate::hash::hash;
-use crate::uint32;
-
-pub use std::io::Result;
+use crate::{hash::hash, uint32};
 
 #[derive(Clone, Copy, Debug)]
 struct HashPos {
@@ -170,8 +168,8 @@ impl CDBMake {
 /// }
 /// ```
 pub struct CDBWriter {
-    dstname: String,
-    tmpname: String,
+    dstname: PathBuf,
+    tmpname: PathBuf,
     cdb: Option<CDBMake>,
 }
 
@@ -179,17 +177,23 @@ impl CDBWriter {
     /// Safely create a new CDB file.
     ///
     /// The suffix for the temporary file defaults to `".tmp"`.
-    pub fn create<P: AsRef<path::Path> + string::ToString>(filename: P) -> Result<CDBWriter> {
+    pub fn create<P: Into<PathBuf>>(filename: P) -> Result<CDBWriter> {
         CDBWriter::with_suffix(filename, ".tmp")
     }
 
     /// Safely create a new CDB file, using a specific suffix for the temporary file.
-    pub fn with_suffix<P: AsRef<path::Path> + string::ToString>(
-        filename: P,
-        suffix: &str,
-    ) -> Result<CDBWriter> {
-        let mut tmpname = filename.to_string();
-        tmpname.push_str(suffix);
+    pub fn with_suffix<P: Into<PathBuf>>(filename: P, suffix: &str) -> Result<CDBWriter> {
+        let filename = filename.into();
+        let mut tmpname = filename.clone();
+        let new_extension = match tmpname.extension() {
+            Some(ext) => {
+                let mut ext = ext.to_os_string();
+                ext.push(suffix);
+                ext
+            }
+            None => OsString::from(suffix),
+        };
+        tmpname.set_extension(new_extension);
         CDBWriter::with_filenames(filename, &tmpname)
     }
 
@@ -197,18 +201,17 @@ impl CDBWriter {
     ///
     /// Note that the temporary file name must be on the same filesystem
     /// as the destination, or else the final rename will fail.
-    pub fn with_filenames<
-        P: AsRef<path::Path> + string::ToString,
-        Q: AsRef<path::Path> + string::ToString,
-    >(
+    pub fn with_filenames<P: Into<PathBuf>, Q: Into<PathBuf>>(
         filename: P,
         tmpname: Q,
     ) -> Result<CDBWriter> {
+        let dstname = filename.into();
+        let tmpname = tmpname.into();
         let file = fs::File::create(&tmpname)?;
         let cdb = CDBMake::new(file)?;
         Ok(CDBWriter {
-            dstname: filename.to_string(),
-            tmpname: tmpname.to_string(),
+            dstname,
+            tmpname,
             cdb: Some(cdb),
         })
     }

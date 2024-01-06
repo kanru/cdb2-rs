@@ -1,10 +1,10 @@
 [package]
 name = "cdb"
-version = "0.6.0"
-authors = ["Bruce Guenter <bruce@untroubled.org>"]
+version = "0.7.0-alpha.1"
+authors = ["Kan-Ru Chen <kanru@kanru.info>"]
 description = "Pure Rust library to read and write CDB files"
-homepage = "https://github.com/bruceg/cdb-rs"
-repository = "https://github.com/bruceg/cdb-rs"
+homepage = "https://github.com/kanru/cdb2-rs"
+repository = "https://github.com/kanru/cdb2-rs"
 readme = "README.md"
 license = "Unlicense"
 edition = "2021"

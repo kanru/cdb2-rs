@@ -54,7 +54,7 @@ impl CDBMake {
         let mut w = io::BufWriter::new(file);
         let buf = [0; 2048];
         w.seek(io::SeekFrom::Start(0))?;
-        w.write(&buf)?;
+        w.write_all(&buf)?;
         Ok(CDBMake {
             entries: iter::repeat(vec![]).take(256).collect::<Vec<_>>(),
             pos: 2048,
@@ -85,7 +85,7 @@ impl CDBMake {
     fn add_begin(&mut self, keylen: u32, datalen: u32) -> Result<()> {
         let mut buf = [0; 8];
         uint32::pack2(&mut buf[0..8], keylen, datalen);
-        self.file.write(&buf)?;
+        self.file.write_all(&buf)?;
         Ok(())
     }
 
@@ -95,8 +95,8 @@ impl CDBMake {
             return Err(io::Error::new(io::ErrorKind::Other, "Key or data too big"));
         }
         self.add_begin(key.len() as u32, data.len() as u32)?;
-        self.file.write(key)?;
-        self.file.write(data)?;
+        self.file.write_all(key)?;
+        self.file.write_all(data)?;
         self.add_end(key.len() as u32, data.len() as u32, hash(key))
     }
 
@@ -136,7 +136,7 @@ impl CDBMake {
 
             for hp in table.iter_mut().take(len) {
                 hp.pack(&mut buf);
-                self.file.write(&buf)?;
+                self.file.write_all(&buf)?;
                 self.pos_plus(8)?;
                 *hp = HashPos { hash: 0, pos: 0 };
             }
@@ -144,7 +144,7 @@ impl CDBMake {
 
         self.file.flush()?;
         self.file.seek(io::SeekFrom::Start(0))?;
-        self.file.write(&header)?;
+        self.file.write_all(&header)?;
         self.file.flush()?;
         Ok(())
     }
@@ -247,7 +247,7 @@ impl CDBWriter {
 impl Drop for CDBWriter {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        if let Some(_) = self.cdb {
+        if self.cdb.is_some() {
             fs::remove_file(&self.tmpname);
         }
     }

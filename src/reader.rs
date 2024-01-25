@@ -81,7 +81,7 @@ impl CDB {
     }
 
     fn match_key(&self, key: &[u8], pos: u32) -> Result<bool> {
-        let mut buf = [0 as u8; KEYSIZE];
+        let mut buf = [0_u8; KEYSIZE];
         let mut len = key.len();
         let mut pos = pos;
         let mut keypos = 0;
@@ -155,7 +155,7 @@ impl CDB {
     /// # }
     /// ````
     pub fn iter(&self) -> CDBKeyValueIter {
-        CDBKeyValueIter::start(&self)
+        CDBKeyValueIter::start(self)
     }
 }
 
@@ -183,13 +183,13 @@ impl<'a> CDBValueIter<'a> {
         let (hpos, hslots, kpos) = cdb.hash_table(khash);
 
         CDBValueIter {
-            cdb: cdb,
-            key: key.into_iter().map(|x| *x).collect(),
-            khash: khash,
+            cdb,
+            key: key.to_vec(),
+            khash,
             kloop: 0,
-            kpos: kpos,
-            hpos: hpos,
-            hslots: hslots,
+            kpos,
+            hpos,
+            hslots,
             dpos: 0,
             dlen: 0,
         }
@@ -217,7 +217,7 @@ impl<'a> Iterator for CDBValueIter<'a> {
     type Item = Result<Vec<u8>>;
     fn next(&mut self) -> Option<Self::Item> {
         while self.kloop < self.hslots {
-            let mut buf = [0 as u8; 8];
+            let mut buf = [0_u8; 8];
             let kpos = self.kpos;
             iter_try!(self.cdb.read(&mut buf, kpos));
             let (khash, pos) = uint32::unpack2(&buf);
@@ -232,12 +232,12 @@ impl<'a> Iterator for CDBValueIter<'a> {
             if khash == self.khash {
                 iter_try!(self.cdb.read(&mut buf, pos));
                 let (klen, dlen) = uint32::unpack2(&buf);
-                if klen as usize == self.key.len() {
-                    if iter_try!(self.cdb.match_key(&self.key[..], pos + 8)) {
-                        self.dlen = dlen;
-                        self.dpos = pos + 8 + self.key.len() as u32;
-                        return Some(self.read_vec());
-                    }
+                if klen as usize == self.key.len()
+                    && iter_try!(self.cdb.match_key(&self.key[..], pos + 8))
+                {
+                    self.dlen = dlen;
+                    self.dpos = pos + 8 + self.key.len() as u32;
+                    return Some(self.read_vec());
                 }
             }
         }

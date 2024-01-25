@@ -73,7 +73,7 @@ impl CDBMake {
 
     fn add_end(&mut self, keylen: u32, datalen: u32, hash: u32) -> Result<()> {
         self.entries[(hash & 0xff) as usize].push(HashPos {
-            hash: hash,
+            hash,
             pos: self.pos,
         });
         self.pos_plus(8)?;
@@ -97,7 +97,7 @@ impl CDBMake {
         self.add_begin(key.len() as u32, data.len() as u32)?;
         self.file.write(key)?;
         self.file.write(data)?;
-        self.add_end(key.len() as u32, data.len() as u32, hash(&key[..]))
+        self.add_end(key.len() as u32, data.len() as u32, hash(key))
     }
 
     /// Set the permissions on the underlying file.
@@ -117,7 +117,7 @@ impl CDBMake {
 
         let mut table = vec![HashPos { hash: 0, pos: 0 }; maxsize];
 
-        let mut header = [0 as u8; 2048];
+        let mut header = [0_u8; 2048];
         for i in 0..256 {
             let len = self.entries[i].len() * 2;
             let j = i * 8;

@@ -10,24 +10,33 @@
 //! Reading a set of records:
 //!
 //! ```
-//! let cdb = cdb::CDB::open("tests/test1.cdb").unwrap();
+//! # fn main() -> std::io::Result<()> {
+//! use cdb2::CDB;
 //!
+//! let cdb = CDB::open("tests/test1.cdb")?;
 //! for result in cdb.find(b"one") {
-//!     println!("{:?}", result.unwrap());
+//!     println!("{:?}", result?);
 //! }
+//! # Ok(())
+//! # }
 //! ```
 //!
 //! Creating a database with safe atomic updating:
 //!
-//! ```no_run
-//! fn main() -> std::io::Result<()> {
-//!     let mut cdb = cdb::CDBWriter::create("temporary.cdb")?;
-//!     cdb.add(b"one", b"Hello, ")?;
-//!     cdb.add(b"one", b"world!\n")?;
-//!     cdb.add(b"two", &[1, 2, 3, 4])?;
-//!     cdb.finish()?;
-//!     Ok(())
-//! }
+//! ```
+//! # fn main() -> std::io::Result<()> {
+//! # let tmp_dir = tempfile::tempdir()?;
+//! # let tmp_path = tmp_dir.path();
+//! # std::env::set_current_dir(&tmp_path)?;
+//! use cdb2::CDBWriter;
+//!
+//! let mut cdb = CDBWriter::create("temporary.cdb")?;
+//! cdb.add(b"one", b"Hello, ")?;
+//! cdb.add(b"one", b"world!\n")?;
+//! cdb.add(b"two", &[1, 2, 3, 4])?;
+//! cdb.finish()?;
+//! # Ok(())
+//! # }
 //! ```
 //!
 //! # References

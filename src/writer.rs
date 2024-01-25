@@ -29,15 +29,18 @@ fn err_toobig<T>() -> Result<T> {
 ///
 /// # Example
 ///
-/// ```no_run
-/// fn main() -> std::io::Result<()> {
-///     let file = std::fs::File::create("temporary.cdb")?;
-///     let mut cdb = cdb::CDBMake::new(file)?;
-///     cdb.add(b"one", b"Hello,")?;
-///     cdb.add(b"two", b"world!")?;
-///     cdb.finish()?;
-///     Ok(())
-/// }
+/// ```
+/// # fn main() -> std::io::Result<()> {
+/// # let tmp_dir = tempfile::tempdir()?;
+/// # let tmp_path = tmp_dir.path();
+/// # std::env::set_current_dir(&tmp_path)?;
+/// let file = std::fs::File::create("temporary.cdb")?;
+/// let mut cdb = cdb2::CDBMake::new(file)?;
+/// cdb.add(b"one", b"Hello,")?;
+/// cdb.add(b"two", b"world!")?;
+/// cdb.finish()?;
+/// # Ok(())
+/// # }
 /// ```
 pub struct CDBMake {
     entries: Vec<Vec<HashPos>>,
@@ -157,15 +160,18 @@ impl CDBMake {
 ///
 /// # Example
 ///
-/// ```no_run
-/// use cdb::CDBWriter;
+/// ```
+/// # fn main() -> std::io::Result<()> {
+/// # let tmp_dir = tempfile::tempdir()?;
+/// # let tmp_path = tmp_dir.path();
+/// # std::env::set_current_dir(&tmp_path)?;
+/// use cdb2::CDBWriter;
 ///
-/// fn main() -> std::io::Result<()> {
-///     let mut cdb = CDBWriter::create("temporary.cdb")?;
-///     cdb.add(b"one", b"Hello")?;
-///     cdb.finish()?;
-///     Ok(())
-/// }
+/// let mut cdb = CDBWriter::create("temporary.cdb")?;
+/// cdb.add(b"one", b"Hello")?;
+/// cdb.finish()?;
+/// # Ok(())
+/// # }
 /// ```
 pub struct CDBWriter {
     dstname: PathBuf,

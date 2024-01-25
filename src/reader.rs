@@ -1,8 +1,9 @@
-use memmap2::Mmap;
 use std::cmp::min;
 use std::fs::File;
 use std::io;
 use std::path;
+
+use memmap2::Mmap;
 
 use crate::hash::hash;
 use crate::uint32;
@@ -16,11 +17,15 @@ const KEYSIZE: usize = 32;
 /// # Example
 ///
 /// ```
-/// let cdb = cdb::CDB::open("tests/test1.cdb").unwrap();
+/// # fn main() -> std::io::Result<()> {
+/// use cdb2::CDB;
 ///
+/// let cdb = CDB::open("tests/test1.cdb")?;
 /// for result in cdb.find(b"one") {
-///     println!("{:?}", result.unwrap());
+///     println!("{:?}", result?);
 /// }
+/// # Ok(())
+/// # }
 /// ```
 pub struct CDB {
     file: Mmap,
@@ -37,7 +42,12 @@ impl CDB {
     /// # Examples
     ///
     /// ```
-    /// let cdb = cdb::CDB::open("tests/test1.cdb").unwrap();
+    /// # fn main() -> std::io::Result<()> {
+    /// use cdb2::CDB;
+    ///
+    /// let cdb = CDB::open("tests/test1.cdb")?;
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn open<P: AsRef<path::Path>>(filename: P) -> Result<CDB> {
         let file = File::open(filename)?;
@@ -94,10 +104,15 @@ impl CDB {
     /// # Examples
     ///
     /// ```
-    /// let cdb = cdb::CDB::open("tests/test1.cdb").unwrap();
+    /// # fn main() -> std::io::Result<()> {
+    /// use cdb2::CDB;
+    ///
+    /// let cdb = CDB::open("tests/test1.cdb")?;
     /// if let Some(record) = cdb.get(b"one") {
-    ///     println!("{:?}", record.unwrap());
+    ///     println!("{:?}", record?);
     /// }
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn get(&self, key: &[u8]) -> Option<Result<Vec<u8>>> {
         self.find(key).next()
@@ -109,11 +124,15 @@ impl CDB {
     /// # Examples
     ///
     /// ```
-    /// let cdb = cdb::CDB::open("tests/test1.cdb").unwrap();
+    /// # fn main() -> std::io::Result<()> {
+    /// use cdb2::CDB;
     ///
+    /// let cdb = CDB::open("tests/test1.cdb")?;
     /// for result in cdb.find(b"one") {
-    ///     println!("{:?}", result.unwrap());
+    ///     println!("{:?}", result?);
     /// }
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn find(&self, key: &[u8]) -> CDBValueIter {
         CDBValueIter::find(self, key)
@@ -124,23 +143,28 @@ impl CDB {
     /// # Examples
     ///
     /// ```
-    /// let cdb = cdb::CDB::open("tests/test1.cdb").unwrap();
+    /// # fn main() -> std::io::Result<()> {
+    /// use cdb2::CDB;
+    ///
+    /// let cdb = CDB::open("tests/test1.cdb")?;
     /// for result in cdb.iter() {
-    ///     let (key, value) = result.unwrap();
+    ///     let (key, value) = result?;
     ///     println!("{:?} => {:?}", key, value);
     /// }
+    /// # Ok(())
+    /// # }
     /// ````
     pub fn iter(&self) -> CDBKeyValueIter {
         CDBKeyValueIter::start(&self)
     }
 }
 
-/// Type alias for [`CDBValueiter`](struct.CDBValueIter.html)
+/// Type alias for [`CDBValueIter`]
 pub type CDBIter<'a> = CDBValueIter<'a>;
 
 /// Iterator over a set of records in the CDB with the same key.
 ///
-/// See [`CDB::find`](struct.CDB.html#method.find)
+/// See [`CDB::find`]
 pub struct CDBValueIter<'a> {
     cdb: &'a CDB,
     key: Vec<u8>,
@@ -223,7 +247,7 @@ impl<'a> Iterator for CDBValueIter<'a> {
 
 /// Iterator over all the records in the CDB.
 ///
-/// See [`CDB::iter`](struct.CDB.html#method.iter)
+/// See [`CDB::iter`]
 pub struct CDBKeyValueIter<'a> {
     cdb: &'a CDB,
     pos: u32,

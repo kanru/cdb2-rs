@@ -1,8 +1,7 @@
-extern crate cdb;
 #[macro_use]
 extern crate criterion;
 
-use cdb::CDB;
+use cdb2::CDB;
 use criterion::Criterion;
 
 fn test_cdb() -> CDB {

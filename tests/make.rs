@@ -46,7 +46,7 @@ fn test_make() {
     assert_eq!(next.1, b", World!");
     let next = i.next().unwrap().unwrap();
     // Can't do this key easily due to missing trait for [u8; 39]
-    //assert_eq!(next.0, b"this key will be split across two reads");
+    assert_eq!(next.0, b"this key will be split across two reads");
     assert_eq!(next.1, b"Got it.");
 
     noerr!(fs::remove_file(filename));

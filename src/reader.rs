@@ -73,7 +73,7 @@ impl CDB {
         let x = ((khash as usize) & 0xff) << 3;
         let (hpos, hslots) = uint32::unpack2(&self.file[x..x + 8]);
         let kpos = if hslots > 0 {
-            hpos + (((khash >> 8) % hslots) << 3)
+            hpos.wrapping_add(((khash >> 8) % hslots) << 3)
         } else {
             0
         };
@@ -213,6 +213,17 @@ macro_rules! iter_try {
     };
 }
 
+macro_rules! iter_checked {
+    ( $e:expr ) => {
+        match $e {
+            None => {
+                return Some(err_badfile());
+            }
+            Some(y) => y,
+        }
+    };
+}
+
 impl<'a> Iterator for CDBValueIter<'a> {
     type Item = Result<Vec<u8>>;
     fn next(&mut self) -> Option<Self::Item> {
@@ -226,7 +237,7 @@ impl<'a> Iterator for CDBValueIter<'a> {
             }
             self.kloop += 1;
             self.kpos += 8;
-            if self.kpos == self.hpos + (self.hslots << 3) {
+            if self.kpos == iter_checked!(self.hpos.checked_add(self.hslots << 3)) {
                 self.kpos = self.hpos;
             }
             if khash == self.khash {
@@ -273,7 +284,12 @@ impl<'a> Iterator for CDBKeyValueIter<'a> {
         } else {
             let (klen, dlen) =
                 uint32::unpack2(&self.cdb.file[self.pos as usize..self.pos as usize + 8]);
-            if self.pos + klen + dlen >= self.data_end {
+            let total_len = self
+                .pos
+                .saturating_add(8)
+                .saturating_add(klen)
+                .saturating_add(dlen);
+            if total_len > self.data_end {
                 Some(err_badfile())
             } else {
                 let kpos = (self.pos + 8) as usize;

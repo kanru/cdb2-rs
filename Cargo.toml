@@ -7,6 +7,7 @@ homepage = "https://github.com/kanru/cdb2-rs"
 repository = "https://github.com/kanru/cdb2-rs"
 readme = "README.md"
 license = "Unlicense"
+rust-version = "1.70"
 edition = "2021"
 
 [dependencies]
@@ -16,6 +17,14 @@ memmap2 = "0.9.1"
 criterion = "0.5"
 tempfile = "3.9.0"
 
+[workspace]
+members = ["fuzzer"]
+
 [[bench]]
 name = "cdb"
 harness = false
+
+[profile.fuzzing]
+inherits = "release"
+debug = true
+panic = "abort"

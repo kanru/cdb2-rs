@@ -1,6 +1,6 @@
 [package]
 name = "cdb2"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Kan-Ru Chen <kanru@kanru.info>"]
 description = "Pure Rust library to read and write CDB files"
 homepage = "https://github.com/kanru/cdb2-rs"

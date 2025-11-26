@@ -1,5 +1,3 @@
-use std::u32;
-
 pub(crate) fn unpack(data: &[u8]) -> u32 {
     u32::from_le_bytes(data.try_into().unwrap())
 }

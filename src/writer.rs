@@ -63,7 +63,7 @@ impl CDBMake {
     }
 
     fn pos_plus(&mut self, len: u32) -> Result<()> {
-        if self.pos + len < len {
+        if self.pos.checked_add(len).is_none() {
             err_toobig()
         } else {
             self.pos += len;

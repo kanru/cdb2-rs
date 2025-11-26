@@ -134,7 +134,7 @@ impl CDB {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn find(&self, key: &[u8]) -> CDBValueIter {
+    pub fn find(&self, key: &[u8]) -> CDBValueIter<'_> {
         CDBValueIter::find(self, key)
     }
 
@@ -154,7 +154,7 @@ impl CDB {
     /// # Ok(())
     /// # }
     /// ````
-    pub fn iter(&self) -> CDBKeyValueIter {
+    pub fn iter(&self) -> CDBKeyValueIter<'_> {
         CDBKeyValueIter::start(self)
     }
 }

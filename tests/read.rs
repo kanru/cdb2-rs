@@ -20,3 +20,9 @@ fn test_two() {
         b"Got it."
     );
 }
+
+#[test]
+fn test_empty() {
+    let cdb = CDB::open("tests/empty.cdb").unwrap();
+    assert_eq!(0, cdb.iter().count());
+}

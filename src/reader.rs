@@ -52,7 +52,7 @@ impl CDB {
     pub fn open<P: AsRef<path::Path>>(filename: P) -> Result<CDB> {
         let file = File::open(filename)?;
         let file = unsafe { Mmap::map(&file)? };
-        if file.len() < 2048 + 8 + 8 || file.len() > 0xffffffff {
+        if file.len() < 2048 || file.len() > 0xffffffff {
             return err_badfile();
         }
         let size = file.len();

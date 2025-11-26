@@ -1,6 +1,6 @@
 use std::fs;
 
-use cdb2::{CDBWriter, CDB};
+use cdb2::{CDB, CDBWriter};
 
 macro_rules! noerr {
     ( $e:expr ) => {

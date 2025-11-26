@@ -33,7 +33,7 @@ pub struct CDB {
 }
 
 fn err_badfile<T>() -> Result<T> {
-    Err(io::Error::new(io::ErrorKind::Other, "Invalid file format"))
+    Err(io::Error::other("Invalid file format"))
 }
 
 impl CDB {

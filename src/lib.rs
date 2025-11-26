@@ -50,5 +50,5 @@ mod reader;
 mod uint32;
 mod writer;
 
-pub use crate::reader::{CDBIter, CDBKeyValueIter, CDBValueIter, Result, CDB};
+pub use crate::reader::{CDB, CDBIter, CDBKeyValueIter, CDBValueIter, Result};
 pub use crate::writer::{CDBMake, CDBWriter};

@@ -2,8 +2,7 @@ use std::{
     cmp::max,
     ffi::OsString,
     fs,
-    io::{self, prelude::*, Result},
-    iter,
+    io::{self, Result, prelude::*},
     path::PathBuf,
 };
 
@@ -22,7 +21,7 @@ impl HashPos {
 }
 
 fn err_toobig<T>() -> Result<T> {
-    Err(io::Error::new(io::ErrorKind::Other, "File too big"))
+    Err(io::Error::other("File too big"))
 }
 
 /// Base interface for making a CDB file.
@@ -56,7 +55,7 @@ impl CDBMake {
         w.seek(io::SeekFrom::Start(0))?;
         w.write_all(&buf)?;
         Ok(CDBMake {
-            entries: iter::repeat(vec![]).take(256).collect::<Vec<_>>(),
+            entries: std::iter::repeat_n(vec![], 256).collect::<Vec<_>>(),
             pos: 2048,
             file: w,
         })
@@ -92,7 +91,7 @@ impl CDBMake {
     /// Add a record to the CDB file.
     pub fn add(&mut self, key: &[u8], data: &[u8]) -> Result<()> {
         if key.len() >= 0xffffffff || data.len() >= 0xffffffff {
-            return Err(io::Error::new(io::ErrorKind::Other, "Key or data too big"));
+            return Err(io::Error::other("Key or data too big"));
         }
         self.add_begin(key.len() as u32, data.len() as u32)?;
         self.file.write_all(key)?;

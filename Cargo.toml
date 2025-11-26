@@ -7,8 +7,8 @@ homepage = "https://github.com/kanru/cdb2-rs"
 repository = "https://github.com/kanru/cdb2-rs"
 readme = "README.md"
 license = "Unlicense"
-rust-version = "1.70"
-edition = "2021"
+rust-version = "1.85"
+edition = "2024"
 
 [dependencies]
 memmap2 = "0.9.1"
